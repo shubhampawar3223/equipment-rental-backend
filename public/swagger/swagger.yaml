@@ -1,0 +1,358 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "Equipment Rental"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "shubham.pawar@blackcurrant.com"
+    
+host: "localhost:3000"
+basePath: "/"
+
+schemes:
+  - "http"
+
+tags:
+  - name: "open"
+    description: "Some open level APIs"
+  - name: "buyer"
+    description: "Some buyer level APIs"
+  - name: "seller"
+    description: "Some seller level APIs"
+    
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+    
+securityDefinitions:
+  Token:
+    type: "apiKey"
+    name: "Authorization"
+    in: "header"
+  
+parameters:
+    User:
+      name: User
+      in: body
+      required: true
+      schema:
+        $ref: '#/definitions/User'
+
+    SignupParameters:
+      name: SignupParameters
+      in: body
+      required: true
+      schema:
+        type: object
+        title: SignupParameters
+        properties: 
+          firstName:
+            type: string
+          lastName:     
+            type: string
+          email: 
+            type: string
+          password: 
+            type: string
+          phoneNo:
+            type: string
+
+    LoginParameters:
+      name: LoginParameters
+      in: body
+      required: true
+      schema:
+        type: object
+        title: LoginParameters
+        properties:    
+            email: 
+              type: string
+            password: 
+              type: string
+
+paths:
+
+  /open/buyer_login:
+    post:
+      description: "Login for Buyer."
+      operationId: "buyer_login"
+      tags: 
+        - "open"
+      summary: "Login api"
+      parameters: 
+        - $ref: '#/parameters/LoginParameters'
+      responses:
+        200:
+          description: "Done"  
+          schema:
+            $ref: '#/definitions/User'
+
+  /open/seller_login:
+    post:
+      description: "Login for seller."
+      operationId: "seller_login"
+      tags: 
+        - "open"
+      summary: "Login api for seller"
+      parameters: 
+        - $ref: '#/parameters/LoginParameters'
+      responses:
+        200:
+          description: "Done"  
+          schema:
+            $ref: '#/definitions/User'          
+
+  /open/buyer_register:
+    post:
+      description: "Registration for buyer."
+      operationId: "buyer_register"
+      tags: 
+        - "open"
+      summary: "Registration api for buyer"
+      parameters: 
+        - $ref: '#/parameters/SignupParameters'
+      responses:
+        200:
+          description: "Done"
+          
+  /open/seller_register:
+    post:
+      description: "Registration for seller."
+      operationId: "seller_register"
+      tags: 
+        - "open"
+      summary: "Registration api for seller"
+      parameters: 
+        - $ref: '#/parameters/SignupParameters'
+      responses:
+        200:
+          description: "Done"        
+
+  /seller/seller_profile:
+    get:
+      operationId: "seller_profile"
+      tags: 
+        - "seller"
+      summary: "api get seller profile"
+      security: 
+        - Token: []
+      responses:
+        200:
+          description: "Done"
+          schema:
+            $ref: '#/definitions/Seller'        
+
+  /buyer/buyer_profile:
+    get:
+      operationId: "buyer_profile"
+      tags: 
+        - "buyer"
+      summary: "api get buyer profile"
+      security: 
+        - Token: []
+      responses:
+        200:
+          description: "Done"
+          schema:
+            $ref: '#/definitions/Buyer'
+            
+definitions:        
+        
+    User:
+      type: object
+      title: User
+      properties:      
+        uId:
+          type: integer
+        uuid:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phoneNo:
+          type: string
+        profilePic:
+          type: string
+        role:
+          type: string  
+          enum:
+            - BUYER
+            - SELLER
+        Buyer:
+          $ref: "#/definitions/Buyer"
+        Seller:
+          $ref: "#/definitions/Seller"      
+
+    Buyer:
+      type: object
+      title: Buyer
+      properties:
+        buyerId:
+          type: integer
+        uId:  
+          type: integer
+        User:
+          $ref: "#/definitions/User"  
+        Orders:
+          type: array
+          items: 
+            $ref: "#/definitions/Order"
+
+    Seller:
+      type: object
+      title: Seller
+      properties:
+        sellerId:
+          type: integer
+        uId:  
+          type: integer
+        User:
+          $ref: "#/definitions/User"  
+        Equipments:
+          type: array
+          items:
+            $ref: "#/definitions/Equipment"
+        Orders:
+          type: array
+          items: 
+            $ref: "#/definitions/Order"              
+
+    CartItem: 
+      type: object
+      title: CartItem
+      properties:      
+        cartItemId:
+            type: integer
+        buyerId:
+            type: integer
+        equipmentId:  
+            type: integer
+        Equipment:
+          $ref: "#/definitions/Equipment"
+        Buyer:      
+          $ref: "#/definitions/Buyer"
+
+    Category:        
+      type: object
+      title: Category
+      properties:    
+        categoryName: 
+          type: string
+        Equipments:
+          type: array
+          items:
+            $ref: "#/definitions/Equipment"
+        SubCategories:
+          type: array
+          items: 
+            $ref: "#/definitions/SubCategory"    
+
+    Equipment:
+      type: object
+      title: Equipment
+      properties:     
+        equipmentId:
+          type: integer
+        sellerId:
+          type: integer
+        modelName:
+          type: string
+        specification:
+          type: string
+        equipmentPic:
+          type: string
+        categoryName:
+          type: string
+        subCategoryName:
+          type: string
+        pricePerDayUnit:
+          type: integer
+        quantity:
+          type: integer
+        status:
+          type: string
+          enum:
+            - AVAILABLE
+            - UNAVAILABLE
+        Seller:
+          $ref: "#/definitions/Seller"
+        Category:
+          $ref: "#/definitions/Category"    
+
+    Order:
+      type: object
+      title: Order
+      properties:      
+        orderId:
+          type: integer
+        date:
+          type: string
+        status:    
+          type: string
+          enum: 
+            - SUCCESS
+            - FAILED
+            - PROCESSING
+        equipmentId:
+          type: integer
+        buyerId:
+          type: integer
+        sellerId:
+          type: integer
+        quantity:
+          type: integer
+        totalRent:
+          type: integer
+        startDate:
+          type: string
+        endDate:
+          type: string
+        Payment:
+          $ref: "#/definitions/Payment"
+        Equipment:
+          $ref: "#/definitions/Equipment"
+        Seller:
+          $ref: "#/definitions/Seller"
+        Buyer:
+          $ref: "#/definitions/Buyer"          
+
+    Payment:
+      type: object
+      title: Payment
+      properties:
+        paymentId:
+          type: integer
+        orderId:   
+          type: integer
+        buyerId: 
+          type: integer
+        sellerId:
+          type: integer
+        date:
+          type: string  
+        status:
+          type: string 
+          enum:
+            - SUCCESS
+            - FAILED 
+        Buyer:
+          $ref: "#/definitions/Buyer"
+        Seller:
+          $ref: "#/definitions/Seller"
+        Order:     
+          $ref: "#/definitions/Order"
+
+    SubCategory:
+      type: object
+      title: SubCategory
+      properties:    
+        subCategoryName:
+          type: string 
+        Category:
+            $ref: "#/definitions/Category"  
